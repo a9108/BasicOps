@@ -69,4 +69,12 @@ public class FileOps {
 			ex.printStackTrace();
 		}
 	}
+	public static void createDir(String dir){
+		try{
+			File cur=new File(dir);
+			cur.mkdir();
+		}catch (Exception ex){
+			ex.printStackTrace();
+		}
+	}
 }
