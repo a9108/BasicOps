@@ -13,7 +13,7 @@ public class Images {
 	    try {
 	    	URL url = new URL(weburl);  
 	        image = ImageIO.read(url);  
-
+	        
 	        ImageIO.write(image, "jpg", new File(path));  
 	    } catch (IOException e) {  
 	        e.printStackTrace();  

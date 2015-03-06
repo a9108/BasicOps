@@ -12,8 +12,8 @@ public class FileOps {
 		File f=new File(dir);
 		return f.exists();
 	}
-	public static List<String> LoadFilebyLine(String dir){
-		List<String> res=new LinkedList<String>();
+	public static LinkedList<String> LoadFilebyLine(String dir){
+		LinkedList<String> res=new LinkedList<String>();
 		try{
 			BufferedReader fin=new BufferedReader(new FileReader(dir));
 			for (;;){
