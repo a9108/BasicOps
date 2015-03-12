@@ -12,6 +12,13 @@ public class FileOps {
 		File f=new File(dir);
 		return f.exists();
 	}
+	public static String LoadFile(String dir){
+		LinkedList<String> res=LoadFilebyLine(dir);
+		String s="";
+		for (String q:res)
+			s+=q+"\n";
+		return s;
+	}
 	public static LinkedList<String> LoadFilebyLine(String dir){
 		LinkedList<String> res=new LinkedList<String>();
 		try{
