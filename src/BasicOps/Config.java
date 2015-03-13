@@ -3,8 +3,8 @@ package BasicOps;
 import java.util.*;
 
 public class Config {
-	Map<String, String> config=new HashMap<String,String>();
-	public void load(String dir){
+	public static Map<String, String> config=new HashMap<String,String>();
+	public static void load(String dir){
 		List<String> rows=FileOps.LoadFilebyLine(dir);
 		for (String row:rows){
 			String[] sep=row.split("\\s+");
@@ -13,9 +13,12 @@ public class Config {
 			}
 		}
 	}
-	public String getValue(String s){
+	public static String getValue(String s){
 		if (config.containsKey(s))
 			return config.get(s);
 		return "";
+	}
+	public static void setValue(String name,String value){
+		config.put(name, value);
 	}
 }
