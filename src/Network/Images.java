@@ -1,4 +1,4 @@
-package Network;
+package network;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
