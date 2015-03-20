@@ -53,7 +53,6 @@ public class WinSVM extends Classification{
 	}
 	@Override
 	public ArrayList<Double> predict(List<Feature> datas) {
-		System.out.println("Batch Predict");
 		ArrayList<Double> tres=new ArrayList<Double>();
 		LinkedList<String> outdata=new LinkedList<String>();
 		for (Feature data:datas){
@@ -68,22 +67,25 @@ public class WinSVM extends Classification{
 		String id="."+rand.nextInt(1000000);
 			FileOps.SaveFile("svm.test"+id, outdata);
 			SystemOps.syscall(svmDir+"\\svm-scale -r svm.scale svm.test"+id, "svm.stest"+id);
-			SystemOps.syscall(svmDir+"\\svm-predict "+param_train+" svm.stest"+id+" svm.model svm.out"+id, true);
+			SystemOps.syscall(svmDir+"\\svm-predict "+param_test+" svm.stest"+id+" svm.model svm.out"+id, false);
 			res=FileOps.LoadFilebyLine("svm.out"+id);
 //		}
-			
-		FileOps.remove("svm.out"+id);
-		FileOps.remove("svm.stest"+id);
-		FileOps.remove("svm.test"+id);
+
+			FileOps.remove("svm.out"+id);
+			FileOps.remove("svm.stest"+id);
+			FileOps.remove("svm.test"+id);
 		for (int i=0;i<datas.size();i++){
 			try{
 			double dres=Double.valueOf(res.get(1+i).split(" ")[1]);
 			tres.add(dres);
 			}catch (Exception ex){
+				if (res.size()<i+2) System.out.println("###########");
+				else System.out.println(res.get(1+i));
 				tres.add(0.0);
 				ex.printStackTrace();
 			}
 		}
+		
 		return tres;
 	}
 
