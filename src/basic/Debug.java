@@ -8,7 +8,7 @@ public class Debug {
 	public static void write(String s){
 		try{
 			if (out!=null){
-				out.write(s+"\n");
+				out.write(s+"\n"); 
 				out.flush();
 			}
 		}catch (Exception ex){}
