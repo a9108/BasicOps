@@ -16,6 +16,10 @@ public class DataOps {
 		return s;
 	}
 	
+	public static double average(List<Double> data){
+		return sum(data)/data.size();
+	}
+	
 	public static <A,B> LinkedList<Pair<A, B>> dict2list_sorted(HashMap<A, B> data,Comparator<Pair<A,B> > cmp){
 		LinkedList<Pair<A, B>> list=dict2list(data);
 		Collections.sort(list,cmp);
@@ -36,5 +40,11 @@ public class DataOps {
 		for (A key:data.keySet())
 			res.add(new Pair<A, B>(key,data.get(key)));
 		return res;
+	}
+	
+	public static double calcRMSE(List<Double> err){
+		double serr=0;
+		for (Double v:err) serr+=Math.pow(v, 2);
+		return Math.sqrt(serr/err.size());
 	}
 }
