@@ -174,7 +174,7 @@ public class MatrixFactorization {
 	public double[] getEmbedding_User(int i) {
 		double[] embed = new double[K];
 		for (int k = 0; k < K; k++)
-			embed[k] = 0;//A[i][k];
+			embed[k] = A[i][k];
 		for (Pair<Integer, Double> f : userF.get(i)) {
 			int id = f.getFirst();
 			double weight = f.getSecond();
