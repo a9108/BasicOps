@@ -13,7 +13,21 @@ public class MatrixFactorization {
 	private int K;
 	private int NF;
 	private int N, M;
-	private double lambda, rate;
+	private double lambda, lambdaF, rate;
+	private boolean globalBias = true, userBias = true, itemBias = true;
+
+	public void setGlobalBias(boolean globalBias) {
+		this.globalBias = globalBias;
+	}
+
+	public void setUserBias(boolean userBias) {
+		this.userBias = userBias;
+	}
+
+	public void setItemBias(boolean itemBias) {
+		this.itemBias = itemBias;
+	}
+
 	private LinkedList<Pair<Pair<Integer, Integer>, Double>> tabel;
 	private double[][] A, B, F;
 	private double[] biasA, biasB, biasF;
@@ -26,12 +40,13 @@ public class MatrixFactorization {
 	public static int BASIC = 1, SIGMOID = 2;
 
 	public MatrixFactorization(int N, int M, int K, int NF, double lambda,
-			double rate, int type) {
+			double lambdaF, double rate, int type) {
 		this.N = N;
 		this.M = M;
 		this.K = K;
 		this.NF = NF;
 		this.lambda = lambda;
+		this.lambdaF = lambdaF;
 		this.rate = rate;
 		this.type = type;
 		random = new Random();
@@ -75,7 +90,13 @@ public class MatrixFactorization {
 	}
 
 	public double predict(int i, int j) {
-		double bias = this.bias + biasA[i] + biasB[j];
+		double bias = 0;
+		if (globalBias)
+			bias += this.bias;
+		if (userBias)
+			bias += biasA[i];
+		if (itemBias)
+			bias += biasB[j];
 		for (Pair<Integer, Double> f : userF.get(i)) {
 			int id = f.getFirst();
 			double weight = f.getSecond();
@@ -88,7 +109,7 @@ public class MatrixFactorization {
 		}
 		double value = bias
 				+ Vector.dot(getEmbedding_User(i), getEmbedding_Item(j));
-//		if (true) return bias;
+		// if (true) return bias;
 		if (type == BASIC)
 			return value;
 		if (type == SIGMOID)
@@ -114,10 +135,11 @@ public class MatrixFactorization {
 		for (int i = 0; i < M; i++)
 			for (int k = 0; k < K; k++)
 				norm += Math.pow(B[i][k], 2);
+		double normF = 0;
 		for (int i = 0; i < NF; i++)
 			for (int k = 0; k < K; k++)
-				norm += Math.pow(F[i][k], 2);
-		return c + lambda * norm;
+				normF += Math.pow(F[i][k], 2);
+		return c + lambda * norm + lambdaF * normF;
 	}
 
 	private void train(int i, int j, double v) {
@@ -128,7 +150,7 @@ public class MatrixFactorization {
 			g = 2 * err;
 		if (type == SIGMOID)
 			g = 2 * err * y * (1 - y);
-		
+
 		double[] user = getEmbedding_User(i), item = getEmbedding_Item(j);
 		for (int k = 0; k < K; k++) {
 			A[i][k] -= rate * (g * item[k] + lambda * A[i][k]);
@@ -139,7 +161,7 @@ public class MatrixFactorization {
 			double weight = f.getSecond();
 			biasF[id] -= rate * g * weight;
 			for (int k = 0; k < K; k++)
-				F[id][k] -= rate * weight * (g * item[k] + lambda * F[id][k]);
+				F[id][k] -= rate * weight * (g * item[k] + lambdaF * F[id][k]);
 		}
 		biasA[i] -= rate * g;
 		biasB[j] -= rate * g;
@@ -154,27 +176,31 @@ public class MatrixFactorization {
 	}
 
 	public void train(int ROUND, boolean silent) {
-		double lacost = getCost();
-		if (!silent)
-			System.out.println("Initial Cost = " + lacost);
-		for (int i = 0; i < ROUND; i++) {
-			train();
-			double cur = getCost();
-			if (cur < lacost)
-				rate *= 1.2;
-			else
-				rate /= 2;
-			lacost = cur;
+		try {
+			double lacost = getCost();
 			if (!silent)
-				System.out.println("Round " + i + "\tCost = " + lacost
-						+ "\tRate = " + rate);
+				System.out.println("Initial Cost = " + lacost);
+			for (int i = 0; i < ROUND; i++) {
+				train();
+				double cur = getCost();
+				if (cur < lacost)
+					rate *= 1.2;
+				else
+					rate /= 2;
+				lacost = cur;
+				if (!silent)
+					System.out.println("Round " + i + "\tCost = " + lacost
+							+ "\tRate = " + rate);
+			}
+		} catch (Exception ex) {
+			ex.printStackTrace();
 		}
 	}
 
 	public double[] getEmbedding_User(int i) {
 		double[] embed = new double[K];
 		for (int k = 0; k < K; k++)
-			embed[k] = A[i][k];
+			embed[k] = 1./K;//A[i][k];
 		for (Pair<Integer, Double> f : userF.get(i)) {
 			int id = f.getFirst();
 			double weight = f.getSecond();

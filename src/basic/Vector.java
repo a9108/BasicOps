@@ -1,5 +1,7 @@
 package basic;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public class Vector {
@@ -51,5 +53,16 @@ public class Vector {
 
 	public static double CosineSimilarity(List<Double> a, List<Double> b) {
 		return dot(a, b) / norm(a) / norm(b);
+	}
+
+	public static ArrayList<Double> load(String s) {
+		String[] sep = s.split("\t");
+		ArrayList<Double> res = new ArrayList<Double>();
+		for (String ts : sep)
+			try {
+				res.add(Double.valueOf(ts));
+			} catch (Exception e) {
+			}
+		return res;
 	}
 }

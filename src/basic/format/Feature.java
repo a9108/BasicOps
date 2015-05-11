@@ -1,28 +1,24 @@
 package basic.format;
 
-public class Feature {
-	private double[] value;
+import java.util.HashSet;
+import java.util.Set;
+
+public abstract class Feature {
 	private double result;
 
-	public void setSize(int n) {
-		value = new double[n];
-	}
+	public abstract void setSize(int n);
 
-	public int size() {
-		return value.length;
-	}
+	public abstract int size();
 
-	public void setValue(int i, double v) {
-		value[i] = v;
-	}
+	public abstract void setValue(int i, double v);
 
-	public double getValue(int i) {
-		return value[i];
-	}
+	public abstract double getValue(int i);
 
 	public double getResult() {
 		return result;
 	}
+
+	public abstract Set<Integer> getIds();
 
 	public void setResult(double result) {
 		this.result = result;
@@ -31,8 +27,9 @@ public class Feature {
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		for (double v : value)
-			sb.append(v + "\t");
+		for (Integer id : getIds())
+			sb.append(id + ":" + getValue(id));
 		return sb.toString();
 	}
+
 }

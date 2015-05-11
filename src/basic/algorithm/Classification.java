@@ -23,6 +23,7 @@ public abstract class Classification {
 	}
 	
 	public abstract void train();
+	public abstract void destroy();
 	public abstract double predict(Feature data);
 	public ArrayList<Double> predict(List<Feature> data){
 		ArrayList<Double> res=new ArrayList<Double>();
