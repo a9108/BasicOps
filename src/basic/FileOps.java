@@ -121,6 +121,7 @@ public class FileOps {
 		}
 		return res;
 	}
+
 	public static HashMap<Integer, Integer> LoadDictionII(String dir) {
 		HashMap<Integer, Integer> res = new HashMap<Integer, Integer>();
 		try {
@@ -135,7 +136,6 @@ public class FileOps {
 		}
 		return res;
 	}
-	
 
 	public static void SaveFile(String dir, String content) {
 		try {
@@ -158,10 +158,11 @@ public class FileOps {
 		}
 	}
 
-	public static void SaveFile(String dir, Map<String, Integer> dict) {
+	public static <A extends Object, B extends Object> void SaveFile(
+			String dir, Map<A, B> dict) {
 		try {
 			BufferedWriter fout = new BufferedWriter(new FileWriter(dir));
-			for (String s : dict.keySet())
+			for (Object s : dict.keySet())
 				fout.write(s + "\t" + dict.get(s) + "\n");
 			fout.close();
 		} catch (Exception ex) {

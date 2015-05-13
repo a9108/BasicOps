@@ -6,6 +6,8 @@ import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.Random;
 
+import com.sun.org.apache.bcel.internal.generic.IF_ACMPEQ;
+
 import basic.format.Feature;
 import basic.format.Pair;
 
@@ -49,14 +51,16 @@ public class RandomTree extends Classification {
 				TS += data.get(i).getResult();
 				TSS += Math.pow(data.get(i).getResult(), 2);
 			}
-			
+
 			double S = 0, SS = 0;
 			for (int i = 0; i < data.size(); i++) {
 				S += data.get(i).getResult();
 				SS += Math.pow(data.get(i).getResult(), 2);
 				if (i + 1 < MIN_DATACNT || data.size() - 1 - i < MIN_DATACNT)
 					continue;
-				if (data.get(i).getValue(id) == data.get(i + 1).getValue(id))
+				if (i + 1	 < data.size()
+						&& data.get(i).getValue(id) == data.get(i + 1)
+								.getValue(id))
 					continue;
 				double cur = mse(S, SS, i + 1)
 						+ mse(TS - S, TSS - SS, data.size() - 1 - i);
@@ -98,9 +102,9 @@ public class RandomTree extends Classification {
 					dataright.add(item);
 			}
 			cur.split = cut;
-//			System.out.println(depth + "\t" + cur.result + "\t"
-//					+ dataleft.size() + "\t" + dataright.size() + "\t"
-//					+ cur.split);
+			// System.out.println(depth + "\t" + cur.result + "\t"
+			// + dataleft.size() + "\t" + dataright.size() + "\t"
+			// + cur.split);
 
 			cur.left = learn(dataleft, depth + 1);
 			cur.right = learn(dataright, depth + 1);

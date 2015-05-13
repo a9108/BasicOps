@@ -12,10 +12,7 @@ public class DenseFeature extends Feature {
 		ids = new HashSet<Integer>();
 		for (int i = 0; i < n; i++)
 			ids.add(i);
-	}
-
-	public int size() {
-		return value.length;
+		nFeature = n;
 	}
 
 	public void setValue(int i, double v) {
@@ -37,5 +34,10 @@ public class DenseFeature extends Feature {
 	@Override
 	public HashSet<Integer> getIds() {
 		return ids;
+	}
+
+	@Override
+	public void append(Feature f) {
+		System.err.println("Dense Feature doesn't Support Append");
 	}
 }

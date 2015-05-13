@@ -1,8 +1,9 @@
 package basic;
 
-import java.math.MathContext;
 import java.util.ArrayList;
 import java.util.Random;
+
+import basic.format.Pair;
 
 public class RandomOps {
 	private static Random random = new Random();
@@ -29,4 +30,19 @@ public class RandomOps {
 			res[i] = genNormal(mean, var);
 		return res;
 	}
+
+	public static int weightedSelection(ArrayList<Pair<Integer, Double>> data,
+			Random random,double sum) {
+		int l = 0, r = data.size();
+		double pos = random.nextDouble()*sum;
+		for (; l < r - 1;) {
+			int m = (l + r) / 2;
+			if (data.get(m).getSecond() < pos)
+				l = m;
+			else
+				r = m;
+		}
+		return l;
+	}
 }
+

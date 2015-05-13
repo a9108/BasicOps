@@ -17,6 +17,14 @@ public class DataOps {
 		return s;
 	}
 
+	public static <T extends Comparable<T>> T max(List<T> data) {
+		T s=null;
+		for (T i : data)
+			if (s == null || s.compareTo(i) < 0)
+				s = i;
+		return s;
+	}
+
 	public static double sum(double[] data) {
 		double s = 0;
 		for (Double i : data)

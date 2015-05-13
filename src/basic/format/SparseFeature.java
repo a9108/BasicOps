@@ -4,20 +4,14 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
-public class SparseFeature extends Feature{
+public class SparseFeature extends Feature {
 
-	private int N;
 	@Override
 	public void setSize(int n) {
-		this.N=n;
+		nFeature = n;
 	}
 
-	@Override
-	public int size() {
-		return N;
-	}
-	
-	HashMap<Integer, Double> values;
+	HashMap<Integer, Double> values = new HashMap<Integer, Double>();
 
 	@Override
 	public void setValue(int i, double v) {
@@ -26,13 +20,21 @@ public class SparseFeature extends Feature{
 
 	@Override
 	public double getValue(int i) {
-		if (values.containsKey(i)) return values.get(i);
+		if (values.containsKey(i))
+			return values.get(i);
 		return 0;
 	}
 
 	@Override
 	public Set<Integer> getIds() {
-		return values.keySet(); 
+		return values.keySet();
+	}
+
+	@Override
+	public void append(Feature f) {
+		for (int id : f.getIds())
+			setValue(id + size(), f.getValue(id));
+		setSize(nFeature + f.size());
 	}
 
 }

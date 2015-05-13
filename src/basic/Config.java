@@ -6,11 +6,15 @@ public class Config {
 	public static Map<String, String> config = new HashMap<String, String>();
 
 	public static void load(String dir) {
+		config=new HashMap<String, String>();
 		List<String> rows = FileOps.LoadFilebyLine(dir);
 		for (String row : rows) {
 			String[] sep = row.split("\\s+");
 			if (sep.length == 2) {
-				config.put(sep[0], sep[1]);
+				if (config.containsKey(sep[0]))
+					config.put(sep[0], config.get(sep[0]) + ";" + sep[1]);
+				else
+					config.put(sep[0], sep[1]);
 			}
 		}
 	}
@@ -20,7 +24,7 @@ public class Config {
 			return config.get(s);
 		return "";
 	}
-	
+
 	public static String getString(String s) {
 		if (config.containsKey(s))
 			return config.get(s);
@@ -46,8 +50,8 @@ public class Config {
 		}
 		return 0;
 	}
-	
-	public static boolean getBoolean(String name){
+
+	public static boolean getBoolean(String name) {
 		return getString(name).toLowerCase().equals("true");
 	}
 }

@@ -2,18 +2,16 @@ package basic.algorithm;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Random;
-import java.util.Set;
 
-import javafx.scene.shape.TriangleMesh;
-import edu.stanford.nlp.ling.CoreAnnotations.NormalizedNamedEntityTagAnnotation;
+import basic.Config;
 import basic.DataOps;
 import basic.Functions;
 import basic.RandomOps;
 import basic.format.Feature;
+import basic.format.Pair;
 
 public class RankingLR extends Classification {
 
@@ -34,14 +32,30 @@ public class RankingLR extends Classification {
 
 	private void normalize() {
 		ma = new double[NFeature];
-		for (int i = 0; i < NFeature; i++)
-			ma[i] = 0.1;
-		for (Feature f : train)
-			for (int id : f.getIds())
-				ma[id] = Math.max(ma[id], Math.abs(f.getValue(id)));
-		for (Feature f : train)
+		for (int i = 0; i < NFeature; i++) {
+			LinkedList<Double> cur = new LinkedList<Double>();
+			for (Feature f : train)
+				if (f.getIds().contains(i))
+					cur.add(f.getValue(i));
+			if (cur.size() == 0)
+				ma[i] = 1;
+			else {
+				Collections.sort(cur);
+				ma[i] = cur.get(cur.size() - 1 - cur.size() * 1 / 1000);
+			}
+			// System.out.println(cur.size() + "\t" + ma[i]);
+			ma[i] = Math.max(ma[i], 1e-1);
+			// if (cur.size() < 10000)
+			// ma[i] = 1e100;
+			// ma[i] = 0.1;
+		}
+		// for (Feature f : train)
+		// for (int id : f.getIds())
+		// ma[id] = Math.max(ma[id], Math.abs(f.getValue(id)));
+		for (Feature f : train) {
 			for (int id : f.getIds())
 				f.setValue(id, f.getValue(id) / ma[id]);
+		}
 	}
 
 	ArrayList<Feature> pos, neg;
@@ -67,38 +81,43 @@ public class RankingLR extends Classification {
 		for (Feature f : train)
 			for (int q : f.getIds())
 				cnt[q]++;
-
-		double[] law = new double[NFeature];
+		
+		int NUMNEG=Config.getInt("NegSampleSize");
+		
+		
 		for (int r = 0; r < TrainNum && rate > 1e-8; r++) {
-			for (int z = 0; z < SampleSize; z++) {
-				for (int q = 0; q < NFeature; q++)
-					law[q] = w[q];
+			ArrayList<Pair<Integer, Double>> negid=new ArrayList<Pair<Integer,Double>>();
+			double sum=0;
+			for (int i=0;i<neg.size();i++)
+				negid.add(new Pair<Integer, Double>(i,sum+=predict(neg.get(i))));
+	for (int z = 0; z < SampleSize; z++) {
 				Collections.shuffle(pos);
+//				for (int tn = 0; tn < NUMNEG; tn++) 
 				for (Feature f : pos) {
-					Feature nf = neg.get(random.nextInt(neg.size()));
-					double p = predict(f, nf);
-					double g = 1 - p;
+						int nid=random.nextInt(neg.size());
+						nid=RandomOps.weightedSelection(negid, random,sum);
+						Feature nf = neg.get(nid);
+						double p = predict(f, nf);
+						double g = 1 - p;
 
-					Set<Integer> ids = f.getIds();
-					ids.addAll(nf.getIds());
-					for (int q : ids)
-						w[q] += rate
-								* ((f.getValue(q) - nf.getValue(q)) * g - w[q]
-										* train.size() / (pos.size() * cnt[q])
-										/ var);
-				}
+						HashSet<Integer> ids = new HashSet<Integer>(f.getIds());
+						ids.addAll(nf.getIds());
+						for (int q : ids)
+							w[q] += rate
+									* ((f.getValue(q) - nf.getValue(q)) * g - w[q]
+											* train.size()
+											/ (pos.size() * cnt[q]) / var);
+					}
 			}
 
 			double cost = getCost();
 
-			if (cost < lacost) {
-				rate *= 1.1;
-				lacost = cost;
-			} else {
-				for (int q = 0; q < NFeature; q++)
-					w[q] = law[q];
-				rate /= 2;
-			}
+//			if (cost < lacost) {
+//				rate *= 1.1;
+//			} else {
+//				rate /= 2;
+//			}
+//			lacost = cost;
 
 			System.out.println("Linear Regression Cost = " + cost
 					+ " , Rate = " + rate);
@@ -135,7 +154,7 @@ public class RankingLR extends Classification {
 
 	public double predict(Feature pos, Feature neg) {
 		double res = 0;
-		Set<Integer> ids = pos.getIds();
+		HashSet<Integer> ids = new HashSet<Integer>(pos.getIds());
 		ids.addAll(neg.getIds());
 		for (int i : ids)
 			res += w[i] * (pos.getValue(i) - neg.getValue(i));
