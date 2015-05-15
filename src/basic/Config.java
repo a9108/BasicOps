@@ -6,17 +6,25 @@ public class Config {
 	public static Map<String, String> config = new HashMap<String, String>();
 
 	public static void load(String dir) {
-		config=new HashMap<String, String>();
+		config = new HashMap<String, String>();
 		List<String> rows = FileOps.LoadFilebyLine(dir);
+		config.put("ignore", "");
 		for (String row : rows) {
 			String[] sep = row.split("\\s+");
-			if (sep.length == 2) {
-				if (config.containsKey(sep[0]))
-					config.put(sep[0], config.get(sep[0]) + ";" + sep[1]);
-				else
+			if (sep.length >= 2) {
+				if (sep[0].equals("ignore"))
 					config.put(sep[0], sep[1]);
+				else {
+					String key = sep[0].replace(config.get("ignore"), "");
+					if (config.containsKey(key))
+						config.put(key, config.get(key) + ";" + sep[1]);
+					else
+						config.put(key, sep[1]);
+				}
 			}
 		}
+//		for (String s : config.keySet())
+//			System.out.println(s + "\t" + config.get(s));
 	}
 
 	public static String getValue(String s) {

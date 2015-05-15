@@ -4,7 +4,6 @@ import java.util.LinkedList;
 
 import basic.format.Feature;
 
-
 public abstract class FeatureGen<T> {
 	protected int nFeature;
 
@@ -14,7 +13,7 @@ public abstract class FeatureGen<T> {
 
 	public abstract void initialize();
 
-	public abstract Feature genFeature(T info);
-	
+	public abstract Feature genFeature(T info, boolean isTrain);
+
 	public abstract String[] getNames();
 }

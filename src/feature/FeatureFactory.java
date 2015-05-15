@@ -41,13 +41,13 @@ public class FeatureFactory<T> {
 			}
 	}
 
-	public Feature genFeature(T info) {
+	public Feature genFeature(T info, boolean isTrain) {
 		Feature f = null;
 		for (FeatureGen<T> fgen : features) {
 			if (f == null)
-				f = fgen.genFeature(info);
+				f = fgen.genFeature(info, isTrain);
 			else
-				f.append(fgen.genFeature(info));
+				f.append(fgen.genFeature(info, isTrain));
 		}
 		return f;
 	}

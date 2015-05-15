@@ -58,7 +58,7 @@ public class RandomTree extends Classification {
 				SS += Math.pow(data.get(i).getResult(), 2);
 				if (i + 1 < MIN_DATACNT || data.size() - 1 - i < MIN_DATACNT)
 					continue;
-				if (i + 1	 < data.size()
+				if (i + 1 < data.size()
 						&& data.get(i).getValue(id) == data.get(i + 1)
 								.getValue(id))
 					continue;
