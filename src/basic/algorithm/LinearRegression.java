@@ -1,11 +1,7 @@
 package basic.algorithm;
 
 import java.util.Collections;
-import java.util.Random;
 
-import javafx.scene.shape.TriangleMesh;
-import edu.stanford.nlp.ling.CoreAnnotations.NormalizedNamedEntityTagAnnotation;
-import basic.DataOps;
 import basic.Functions;
 import basic.RandomOps;
 import basic.format.Feature;

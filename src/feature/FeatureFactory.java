@@ -2,6 +2,8 @@ package feature;
 
 import java.util.LinkedList;
 
+import com.sun.org.apache.xml.internal.security.Init;
+
 import basic.Config;
 import basic.format.Feature;
 import basic.format.SparseFeature;
@@ -11,8 +13,15 @@ public class FeatureFactory<T> {
 	private LinkedList<FeatureGen<T>> features;
 
 	public FeatureFactory() {
-		String[] names = Config.getString("Features").split(";");
-		String prefix = Config.getString("FeaturePackage");
+		initialize(Config.getString("Features"), Config.getString("FeaturePackage"));
+	}
+	
+	public FeatureFactory(String features,String prefix){
+		initialize(features, prefix);
+	}
+	
+	private void initialize(String fnames,String prefix){
+		String[] names = fnames.split(";");
 		features = new LinkedList<FeatureGen<T>>();
 		NFeature = 0;
 		int id = 0;
@@ -39,6 +48,7 @@ public class FeatureFactory<T> {
 				}
 
 			}
+
 	}
 
 	public Feature genFeature(T info, boolean isTrain) {

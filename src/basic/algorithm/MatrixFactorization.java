@@ -6,8 +6,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Random;
 
-import com.sun.org.apache.xalan.internal.xsltc.compiler.sym;
-
 import basic.Config;
 import basic.FileOps;
 import basic.Functions;
@@ -142,13 +140,13 @@ public class MatrixFactorization {
 	public double getCost() {
 		double c = 0;
 		for (Pair<Pair<Integer, Integer>, Double> entry : tabel) {
-			if (type == BASIC)
+			if (type == BASIC) {
 				c += Math.pow(
 						predict(entry.getFirst().getFirst(), entry.getFirst()
 								.getSecond() == -1 ? random.nextInt(M) : entry
 								.getFirst().getSecond())
 								- entry.getSecond(), 2);
-			else if (type == SIGMOID) {
+			} else if (type == SIGMOID) {
 				if (entry.getSecond() == 1)
 					c -= Math.log(predict(entry.getFirst().getFirst(), entry
 							.getFirst().getSecond() == -1 ? random.nextInt(M)
@@ -250,7 +248,7 @@ public class MatrixFactorization {
 				train();
 				double cur = getCost();
 				if (cur < lacost)
-					rate *= 1.2;
+					rate =Math.min(rate* 1.1,1e-3);
 				else
 					rate /= 2;
 				lacost = cur;
@@ -332,7 +330,7 @@ public class MatrixFactorization {
 	}
 
 	public void load(String dir) {
-		LinkedList<String> data = new FileOps().LoadFilebyLine(dir);
+		LinkedList<String> data = FileOps.LoadFilebyLine(dir);
 		Iterator<String> itr = data.iterator();
 		N = Integer.valueOf(itr.next());
 		M = Integer.valueOf(itr.next());

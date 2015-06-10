@@ -6,8 +6,6 @@ import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.Random;
 
-import com.sun.org.apache.bcel.internal.generic.IF_ACMPEQ;
-
 import basic.format.Feature;
 import basic.format.Pair;
 

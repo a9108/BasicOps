@@ -6,7 +6,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
-import basic.Config;
 import basic.FileOps;
 import basic.SystemOps;
 import basic.format.Feature;

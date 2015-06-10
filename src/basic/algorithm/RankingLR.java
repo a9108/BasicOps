@@ -6,13 +6,10 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Random;
 
-import edu.stanford.nlp.parser.lexparser.TrainOptions;
 import basic.Config;
-import basic.DataOps;
 import basic.Functions;
 import basic.RandomOps;
 import basic.format.Feature;
-import basic.format.Pair;
 
 public class RankingLR extends Classification {
 
@@ -60,6 +57,16 @@ public class RankingLR extends Classification {
 			for (int id : f.getIds())
 				f.setValue(id, (f.getValue(id) - mi[id]) / (ma[id] - mi[id]));
 		}
+
+		for (Feature f : train) {
+			f.setSize(NFeature * Config.getInt("LRDegree"));
+			HashSet<Integer> ids = new HashSet<Integer>(f.getIds());
+			for (int i = 1; i < Config.getInt("LRDegree"); i++)
+				for (int id : ids)
+					f.setValue(id + i * NFeature,
+							Math.pow(f.getValue(id), i + 1));
+		}
+		NFeature *= Config.getInt("LRDegree");
 	}
 
 	ArrayList<Feature> pos, neg;

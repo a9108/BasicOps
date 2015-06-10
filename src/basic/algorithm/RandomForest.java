@@ -5,7 +5,6 @@ import java.util.Random;
 
 import basic.Config;
 import basic.DataOps;
-import basic.Vector;
 import basic.format.Feature;
 
 public class RandomForest extends Classification {

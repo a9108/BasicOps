@@ -49,7 +49,7 @@ public class DataOps {
 	}
 
 	public static <A extends Comparable<A>, B extends Comparable<B>> LinkedList<Pair<A, B>> selectTopN(
-			HashMap<A, B> data,int N) {
+			HashMap<A, B> data, int N) {
 		LinkedList<Pair<A, B>> list = dict2list_sorted(data);
 		LinkedList<Pair<A, B>> res = new LinkedList<Pair<A, B>>();
 		Iterator<Pair<A, B>> itr = list.iterator();
@@ -81,5 +81,13 @@ public class DataOps {
 		for (Double v : err)
 			serr += Math.pow(v, 2);
 		return Math.sqrt(serr / err.size());
+	}
+
+	public static HashMap<Integer, Double> selectTopN_Map(
+			HashMap<Integer, Double> values, int N) {
+		HashMap<Integer, Double> res = new HashMap<Integer, Double>();
+		for (Pair<Integer, Double> item : selectTopN(values, N))
+			res.put(item.getFirst(), item.getSecond());
+		return res;
 	}
 }
