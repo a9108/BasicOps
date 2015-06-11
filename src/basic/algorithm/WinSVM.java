@@ -44,8 +44,11 @@ public class WinSVM extends Classification {
 	}
 
 	@Override
-	public double predict(Feature data) {
-		return -1;
+	public double predict(Feature data){
+		System.err.println("Single Predict is not Recommended for SVM");
+		LinkedList<Feature> datas=new LinkedList<Feature>();
+		datas.add(data);
+		return predict(datas).get(0);
 	}
 
 	@Override
@@ -81,7 +84,9 @@ public class WinSVM extends Classification {
 		System.out.println(cid);
 		for (; ires.hasNext();) {
 			try {
-				double dres = Double.valueOf(ires.next().split(" ")[cid]);
+				String cur = ires.next();
+				System.out.println(cur);
+				double dres = Double.valueOf(cur.split(" ")[cid]);
 				tres.add(dres);
 			} catch (Exception ex) {
 				tres.add(0.0);
