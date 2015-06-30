@@ -9,7 +9,7 @@ import basic.format.Feature;
 public class LinearRegression extends Classification {
 
 	private double var;
-	private double[] w, ma;
+	private double[] w, ma, mi;
 	private double bias = 0;
 	private double rate;
 	private int TrainNum;
@@ -23,14 +23,33 @@ public class LinearRegression extends Classification {
 
 	private void normalize() {
 		ma = new double[NFeature];
+		mi = new double[NFeature];
+		boolean[] vi = new boolean[NFeature];
+		for (int i = 0; i < NFeature; i++) {
+			ma[i] = 0;
+			mi[i] = 0;
+			vi[i] = false;
+		}
+		for (Feature f : train)
+			for (int id : f.getIds()) {
+				if (!vi[id]) {
+					vi[id] = true;
+					ma[id] = mi[id] = f.getValue(id);
+				}
+				ma[id] = Math.max(ma[id], f.getValue(id));
+				mi[id] = Math.min(mi[id], f.getValue(id));
+			}
 		for (int i = 0; i < NFeature; i++)
-			ma[i] = 0.1;
-		for (Feature f : train)
+			ma[i] = Math.max(ma[i], mi[i] + 0.1);
+		int cnt = 0;
+		for (Feature f : train) {
 			for (int id : f.getIds())
-				ma[id] = Math.max(ma[id], Math.abs(f.getValue(id)));
-		for (Feature f : train)
-			for (int id : f.getIds())
-				f.setValue(id, f.getValue(id) / ma[id]);
+				f.setValue(id, (f.getValue(id) - mi[id]) / (ma[id] - mi[id]));
+			if (cnt < 10) {
+				System.out.println(f.toString());
+				cnt++;
+			}
+		}
 	}
 
 	@Override
@@ -101,7 +120,7 @@ public class LinearRegression extends Classification {
 	public double predict(Feature data) {
 		double res = bias;
 		for (int i : data.getIds())
-			res += w[i] * data.getValue(i) / ma[i];
+			res += w[i] * (data.getValue(i) - mi[i]) / (ma[i] - mi[i]);
 		return Functions.sigmoid(res);
 	}
 

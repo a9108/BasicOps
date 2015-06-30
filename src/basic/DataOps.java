@@ -90,4 +90,12 @@ public class DataOps {
 			res.put(item.getFirst(), item.getSecond());
 		return res;
 	}
+
+	public static double variance(List<Double> res) {
+		double avg = average(res);
+		double s = 0;
+		for (double t : res)
+			s += (t - avg) * (t - avg);
+		return Math.sqrt(s / (res.size() - 1));
+	}
 }

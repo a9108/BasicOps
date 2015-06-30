@@ -58,6 +58,7 @@ public class RankingLR extends Classification {
 				f.setValue(id, (f.getValue(id) - mi[id]) / (ma[id] - mi[id]));
 		}
 
+		int cnt = 0;
 		for (Feature f : train) {
 			f.setSize(NFeature * Config.getInt("LRDegree"));
 			HashSet<Integer> ids = new HashSet<Integer>(f.getIds());
@@ -65,6 +66,10 @@ public class RankingLR extends Classification {
 				for (int id : ids)
 					f.setValue(id + i * NFeature,
 							Math.pow(f.getValue(id), i + 1));
+			if (cnt < 10) {
+				System.out.println(f.toString());
+				cnt++;
+			}
 		}
 		NFeature *= Config.getInt("LRDegree");
 	}
@@ -106,8 +111,6 @@ public class RankingLR extends Classification {
 			for (int q : f.getIds())
 				cntF[q]++;
 
-		int NUMNEG = Config.getInt("NegSampleSize");
-
 		for (int r = 0; r < TrainNum && rate > 1e-8; r++) {
 			// ArrayList<Pair<Integer, Double>> negid = new
 			// ArrayList<Pair<Integer, Double>>();
@@ -127,6 +130,8 @@ public class RankingLR extends Classification {
 			Collections.shuffle(neg);
 			for (Feature nf : neg)
 				train(pos.get(random.nextInt(pos.size())), nf);
+			for (Feature f : pos)
+				train(f, neg.get(random.nextInt(neg.size())));
 
 			// Collections.shuffle(pos);
 			// for (Feature f:pos)
@@ -154,6 +159,11 @@ public class RankingLR extends Classification {
 		double c = 0;
 		for (Feature f : pos) {
 			Feature nf = neg.get(random.nextInt(neg.size()));
+			double p = predict(f, nf);
+			c += Math.log(p);
+		}
+		for (Feature nf : neg) {
+			Feature f = pos.get(random.nextInt(pos.size()));
 			double p = predict(f, nf);
 			c += Math.log(p);
 		}

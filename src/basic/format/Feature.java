@@ -30,8 +30,9 @@ public abstract class Feature {
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
+		sb.append(result + "\t");
 		for (Integer id : getIds())
-			sb.append(id + ":" + getValue(id)+"\t");
+			sb.append(id + ":" + getValue(id) + "\t");
 		return sb.toString();
 	}
 
