@@ -194,4 +194,10 @@ public class RankingLR extends Classification {
 		return Functions.sigmoid(res);
 	}
 
+	@Override
+	public void clear() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

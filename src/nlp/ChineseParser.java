@@ -19,7 +19,7 @@ public class ChineseParser {
 	
 		    segmenter = new CRFClassifier<CoreLabel>(props);
 		    segmenter.loadClassifierNoExceptions(basedir + "/ctb.gz", props);
-		    System.out.println(parse("è¿™æ˜¯ä¸€ä¸ªæµ‹è¯•æµ‹è¯•æµ‹è¯•"));
+		    
 		}catch (Exception ex){
 			ex.printStackTrace();
 		}
@@ -27,5 +27,11 @@ public class ChineseParser {
 	public List<String> parse(String s){
 		List<String> segmented = segmenter.segmentString(s);
 	    return segmented;
+	}
+	
+	public static void main(String[] args) {
+		ChineseParser parser=new ChineseParser();
+		parser.init("D:\\WorkSpace\\tools\\stanford-segmenter\\data");
+		System.out.println(parser.parse("Ï°½üÆ½Ïò½ÌÊ¦ÖÂÒÔ½ÚÈÕ×£ºØ£ºÔğÈÎÖØ´óÊ¹Ãü¹âÈÙ"));
 	}
 }

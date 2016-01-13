@@ -6,6 +6,15 @@ import java.util.Set;
 
 public class SparseFeature extends Feature {
 
+	public SparseFeature() {
+	}
+	public SparseFeature(Feature curF) {
+		setSize(curF.size());
+		setResult(curF.getResult());
+		for (int id : curF.getIds())
+			setValue(id, curF.getValue(id));
+	}
+
 	@Override
 	public void setSize(int n) {
 		nFeature = n;

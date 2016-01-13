@@ -24,6 +24,13 @@ public class DataOps {
 				s = i;
 		return s;
 	}
+	public static <T extends Comparable<T>> T min(List<T> data) {
+		T s = null;
+		for (T i : data)
+			if (s == null || s.compareTo(i) > 0)
+				s = i;
+		return s;
+	}
 
 	public static double sum(double[] data) {
 		double s = 0;
@@ -31,9 +38,22 @@ public class DataOps {
 			s += i;
 		return s;
 	}
+	
+	public static double ABSsum(double[] data) {
+		double s = 0;
+		for (double i : data)
+			s += Math.abs(i);
+		return s;
+	}
 
 	public static double average(List<Double> data) {
 		return sum(data) / data.size();
+	}
+	public static double average(double[] data) {
+		return sum(data) / data.length;
+	}
+	public static double ABSaverage(double[] data) {
+		return ABSsum(data) / data.length;
 	}
 
 	public static <A extends Comparable<A>, B extends Comparable<B>> LinkedList<Pair<A, B>> dict2list_sorted(
@@ -98,4 +118,5 @@ public class DataOps {
 			s += (t - avg) * (t - avg);
 		return Math.sqrt(s / (res.size() - 1));
 	}
+
 }

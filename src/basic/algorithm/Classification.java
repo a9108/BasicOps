@@ -22,6 +22,8 @@ public abstract class Classification {
 		train.add(feature);
 	}
 	
+	public abstract void clear();
+	
 	public abstract void train();
 	public abstract void destroy();
 	public abstract double predict(Feature data);

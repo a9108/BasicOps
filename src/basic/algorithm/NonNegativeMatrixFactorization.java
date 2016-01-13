@@ -11,8 +11,8 @@ import basic.Functions;
 import basic.Vector;
 import basic.format.Pair;
 
-public class MatrixFactorization {
-	private int NThread = 1;
+public class NonNegativeMatrixFactorization {
+	private int NThread=1;
 	private int K;
 	private int NF;
 	private int N, M;
@@ -22,7 +22,6 @@ public class MatrixFactorization {
 	public void setNThread(int nThread) {
 		NThread = nThread;
 	}
-
 	public void setGlobalBias(boolean globalBias) {
 		this.globalBias = globalBias;
 	}
@@ -47,7 +46,7 @@ public class MatrixFactorization {
 
 	public static int BASIC = 1, SIGMOID = 2;
 
-	public MatrixFactorization(int N, int M, int K, int NF, double lambda,
+	public NonNegativeMatrixFactorization(int N, int M, int K, int NF, double lambda,
 			double lambdaF, double rate, int type) {
 		this.N = N;
 		this.M = M;
@@ -66,24 +65,24 @@ public class MatrixFactorization {
 		biasA = new double[N];
 		biasB = new double[M];
 		biasF = new double[NF];
-
+		
 		userF = new ArrayList<LinkedList<Pair<Integer, Double>>>();
 		for (int i = 0; i < N; i++)
 			userF.add(new LinkedList<Pair<Integer, Double>>());
 		itemF = new ArrayList<LinkedList<Pair<Integer, Double>>>();
 		for (int i = 0; i < M; i++)
 			itemF.add(new LinkedList<Pair<Integer, Double>>());
-
+		
 		for (int i = 0; i < N; i++)
 			for (int k = 0; k < K; k++)
-				A[i][k] = (random.nextDouble() * 2 - 1) / Math.sqrt(K);
+				A[i][k] = (random.nextDouble()) / Math.sqrt(K);
 		for (int i = 0; i < M; i++)
 			for (int k = 0; k < K; k++)
-				B[i][k] = (random.nextDouble() * 2 - 1) / Math.sqrt(K);
+				B[i][k] = (random.nextDouble()) / Math.sqrt(K);
 		for (int i = 0; i < NF; i++)
 			for (int k = 0; k < K; k++)
-				F[i][k] = (random.nextDouble() * 2 - 1) / Math.sqrt(K);
-
+				F[i][k] = (random.nextDouble()) / Math.sqrt(K);
+		
 		table = new LinkedList<Pair<Pair<Integer, Integer>, Double>>();
 		cntU = new int[N];
 		cntI = new int[M];
@@ -111,7 +110,7 @@ public class MatrixFactorization {
 		if (userBias)
 			bias += getUserBias(i);
 		if (itemBias)
-			bias += getItemBias(j);
+			bias+=getItemBias(j);
 		double value = bias
 				+ Vector.dot(getEmbedding_User(i), getEmbedding_Item(j));
 		if (type == BASIC)
@@ -122,7 +121,7 @@ public class MatrixFactorization {
 	}
 
 	public double getUserBias(int i) {
-		double bias = biasA[i];
+		double bias=biasA[i];
 		for (Pair<Integer, Double> f : userF.get(i)) {
 			int id = f.getFirst();
 			double weight = f.getSecond();
@@ -130,8 +129,8 @@ public class MatrixFactorization {
 		}
 		return bias;
 	}
-
-	public double getItemBias(int j) {
+	
+	public double getItemBias(int j){
 		double bias = biasB[j];
 		for (Pair<Integer, Double> f : itemF.get(j)) {
 			int id = f.getFirst();
@@ -193,7 +192,9 @@ public class MatrixFactorization {
 		double[] user = getEmbedding_User(i), item = getEmbedding_Item(j);
 		for (int k = 0; k < K; k++) {
 			A[i][k] -= rate * (g * item[k] + lambda * A[i][k]);
+			A[i][k]=Math.max(0, A[i][k]);
 			B[j][k] -= rate * (g * user[k] + lambda * B[j][k]);
+			B[j][k]=Math.max(0, B[j][k]);
 		}
 		for (Pair<Integer, Double> f : userF.get(i)) {
 			int id = f.getFirst();
@@ -252,7 +253,7 @@ public class MatrixFactorization {
 				train();
 				double cur = getCost();
 				if (cur < lacost)
-					rate = Math.min(rate * 1.1, 1e-2);
+					rate = Math.min(rate * 1.1, 1e-3);
 				else
 					rate /= 2;
 				lacost = cur;

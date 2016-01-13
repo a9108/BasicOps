@@ -1,4 +1,4 @@
-package basic.algorithm;
+package basic.learning.classification.multi;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -9,7 +9,7 @@ import java.util.Random;
 import basic.format.Feature;
 import basic.format.Pair;
 
-public class RandomTree extends Classification {
+public class RandomTree extends MultiClassClassification {
 
 	private ArrayList<TreeNode> tree;
 	private LinkedList<Integer> validFeatures;
@@ -20,22 +20,32 @@ public class RandomTree extends Classification {
 	private int MIN_DATACNT;
 	private double FEATURE_RATIO;
 
-	public RandomTree(int max_level, int min_datacnt, double ratio,
-			int nfeatures) {
+	public RandomTree(int nClass, int nFeatures, int max_level,
+			int min_datacnt, double ratio) {
+		super(nClass, nFeatures);
 		MAX_LEVEL = max_level;
 		MIN_DATACNT = min_datacnt;
 		FEATURE_RATIO = ratio;
 		random = new Random();
-		setNFeature(nfeatures);
 	}
 
-	private double mse(double s, double ss, int n) {
-		return ss - s * s / n;
+	private double entropy(int[] cnt) {
+		double s = 0;
+		for (int c : cnt)
+			s += c;
+		double e = 0;
+		for (int c : cnt)
+			if (c > 0) {
+				double p = c / s;
+				e -= p * Math.log(p);
+			}
+		return e;
 	}
 
 	private Split findSplit(ArrayList<Feature> data) {
 		Split res = null;
 		double best = 1e100;
+
 		for (final int id : validFeatures) {
 			Collections.sort(data, new Comparator<Feature>() {
 				@Override
@@ -44,24 +54,23 @@ public class RandomTree extends Classification {
 					return va.compareTo(b.getValue(id));
 				}
 			});
-			double TS = 0, TSS = 0;
-			for (int i = 0; i < data.size(); i++) {
-				TS += data.get(i).getResult();
-				TSS += Math.pow(data.get(i).getResult(), 2);
-			}
+			int[] nright = new int[nClass];
+			for (Feature f : data)
+				nright[(int) f.getResult()]++;
 
-			double S = 0, SS = 0;
+			int[] nleft = new int[nClass];
 			for (int i = 0; i < data.size(); i++) {
-				S += data.get(i).getResult();
-				SS += Math.pow(data.get(i).getResult(), 2);
+				nleft[(int) data.get(i).getResult()]++;
+				nright[(int) data.get(i).getResult()]--;
+//				System.out.println(i + "\t" + data.get(i).getValue(0));
 				if (i + 1 < MIN_DATACNT || data.size() - 1 - i < MIN_DATACNT)
 					continue;
 				if (i + 1 < data.size()
 						&& data.get(i).getValue(id) == data.get(i + 1)
 								.getValue(id))
 					continue;
-				double cur = mse(S, SS, i + 1)
-						+ mse(TS - S, TSS - SS, data.size() - 1 - i);
+				double cur = entropy(nleft) * (i + 1) + entropy(nright)
+						* (data.size() - i - 1);
 				if (cur < best) {
 					best = cur;
 					res = new Split(id, (data.get(i).getValue(id) + data.get(
@@ -80,15 +89,20 @@ public class RandomTree extends Classification {
 		cur.cnt = data.size();
 		cur.isleaf = true;
 		cur.left = cur.right = -1;
-		double s = 0;
+		double[] s = new double[nClass];
+
 		for (Feature item : data)
-			s += item.getResult();
-		s /= data.size();
+			s[(int) item.getResult()]++;
+		boolean finish = false;
+		for (int i = 0; i < nClass; i++) {
+			if (s[i] > data.size() - 0.1)
+				finish = true;
+			s[i] /= data.size();
+		}
 		cur.result = s;
-		// System.out.println(data.size()+"\t"+cur.result);
 
 		Split cut = null;
-		if (depth < MAX_LEVEL)
+		if (!finish && depth < MAX_LEVEL)
 			cut = findSplit(data);
 		if (cut != null) {
 			ArrayList<Feature> dataleft = new ArrayList<Feature>();
@@ -100,9 +114,6 @@ public class RandomTree extends Classification {
 					dataright.add(item);
 			}
 			cur.split = cut;
-			// System.out.println(depth + "\t" + cur.result + "\t"
-			// + dataleft.size() + "\t" + dataright.size() + "\t"
-			// + cur.split);
 
 			cur.left = learn(dataleft, depth + 1);
 			cur.right = learn(dataright, depth + 1);
@@ -125,10 +136,17 @@ public class RandomTree extends Classification {
 	}
 
 	@Override
-	public double predict(Feature data) {
+	public void destroy() {
+	}
+
+	@Override
+	public void clear() {
+	}
+
+	@Override
+	public double[] predictDetail(Feature data) {
 		for (int pos = 0;;) {
 			TreeNode cur = tree.get(pos);
-			// System.out.println(cur);
 			if (cur.isleaf)
 				return cur.result;
 			if (data.getValue(cur.split.getFirst()) < cur.split.getSecond())
@@ -137,24 +155,12 @@ public class RandomTree extends Classification {
 				pos = cur.right;
 		}
 	}
-
-	@Override
-	public void destroy() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void clear() {
-		// TODO Auto-generated method stub
-		
-	}
 }
 
 class TreeNode {
 	public Split split;
 	public int depth;
-	public double result;
+	public double[] result;
 	public int cnt;
 	public boolean isleaf;
 	public int left, right;

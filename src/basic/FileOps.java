@@ -189,4 +189,16 @@ public class FileOps {
 		}
 		SaveFile(dir, sdata);
 	}
+
+	public static <A extends Object, B extends Object> void SaveCSV(String dir,
+			Map<A, B> dict) {
+		try {
+			BufferedWriter fout = new BufferedWriter(new FileWriter(dir));
+			for (Object s : dict.keySet())
+				fout.write(s + "," + dict.get(s) + "\n");
+			fout.close();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
 }

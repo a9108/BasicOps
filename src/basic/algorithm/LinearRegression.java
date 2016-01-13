@@ -11,7 +11,7 @@ public class LinearRegression extends Classification {
 	private double var;
 	private double[] w, ma, mi;
 	private double bias = 0;
-	private double rate;
+	private double rate, initrate;
 	private int TrainNum;
 
 	public LinearRegression(int nFeature, int TrainNum, double rate, double var) {
@@ -19,6 +19,7 @@ public class LinearRegression extends Classification {
 		this.var = var;
 		this.TrainNum = TrainNum;
 		this.rate = rate;
+		initrate = rate;
 	}
 
 	private void normalize() {
@@ -46,7 +47,7 @@ public class LinearRegression extends Classification {
 			for (int id : f.getIds())
 				f.setValue(id, (f.getValue(id) - mi[id]) / (ma[id] - mi[id]));
 			if (cnt < 10) {
-				System.out.println(f.toString());
+//				System.out.println(f.toString());
 				cnt++;
 			}
 		}
@@ -91,8 +92,8 @@ public class LinearRegression extends Classification {
 				rate /= 2;
 			}
 
-			System.out.println("Linear Regression Cost = " + cost
-					+ " , Rate = " + rate);
+//			System.out.println("Linear Regression Cost = " + cost
+//					+ " , Rate = " + rate);
 		}
 		System.out.println(bias);
 		for (int i = 0; i < NFeature; i++)
@@ -129,6 +130,12 @@ public class LinearRegression extends Classification {
 		for (int i : data.getIds())
 			res += w[i] * data.getValue(i);
 		return Functions.sigmoid(res);
+	}
+
+	@Override
+	public void clear() {
+		train.clear();
+		rate = initrate;
 	}
 
 }

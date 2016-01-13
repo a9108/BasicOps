@@ -1,13 +1,12 @@
-package basic.algorithm;
+package basic.learning.classification.multi;
 
 import java.util.LinkedList;
 import java.util.Random;
 
 import basic.Config;
-import basic.DataOps;
 import basic.format.Feature;
 
-public class RandomForest extends Classification {
+public class RandomForest extends MultiClassClassification {
 
 	private int MAX_LEVEL;
 	private int MIN_DATACNT;
@@ -17,14 +16,15 @@ public class RandomForest extends Classification {
 
 	LinkedList<RandomTree> trees;
 
-	public RandomForest(int num_trees, int max_level, int min_datacnt,
-			double feature_ratio, double data_ratio, int NFeatures) {
+	public RandomForest(int nClass, int nFeatures, int num_trees,
+			int max_level, int min_datacnt, double feature_ratio,
+			double data_ratio) {
+		super(nClass, nFeatures);
 		NUM_TREES = num_trees;
 		MAX_LEVEL = max_level;
 		MIN_DATACNT = min_datacnt;
 		FEATURE_RATIO = feature_ratio;
 		DATA_RATIO = data_ratio;
-		setNFeature(NFeatures);
 	}
 
 	@Override
@@ -45,8 +45,8 @@ public class RandomForest extends Classification {
 								return;
 							Q.removeFirst();
 						}
-						RandomTree tree = new RandomTree(MAX_LEVEL,
-								MIN_DATACNT, FEATURE_RATIO, NFeature);
+						RandomTree tree = new RandomTree(nClass, NFeature,
+								MAX_LEVEL, MIN_DATACNT, FEATURE_RATIO);
 						for (Feature f : train)
 							if (random.nextDouble() < DATA_RATIO)
 								tree.addTrain(f);
@@ -74,17 +74,21 @@ public class RandomForest extends Classification {
 	}
 
 	@Override
-	public double predict(Feature data) {
-		LinkedList<Double> res = new LinkedList<Double>();
-		for (RandomTree tree : trees)
-			res.add(tree.predict(data));
-		return DataOps.average(res);
+	public void clear() {
 	}
 
 	@Override
-	public void clear() {
-		// TODO Auto-generated method stub
-		
+	public double[] predictDetail(Feature data) {
+		double[] res = new double[nClass];
+		for (RandomTree tree : trees) {
+			double[] tres = tree.predictDetail(data);
+			for (int i = 0; i < nClass; i++)
+				 res[i] =Math.max(res[i], tres[i]);
+//				res[i] += tres[i];
+		}
+		// for (int i = 0; i < nClass; i++)
+		// res[i] /= trees.size();
+		return res;
 	}
 
 }

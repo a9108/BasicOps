@@ -81,11 +81,11 @@ public class WinSVM extends Classification {
 		int cid = 1;
 		if (ires.next().endsWith(" 1"))
 			cid = 2;
-		System.out.println(cid);
+//		System.out.println(cid);
 		for (; ires.hasNext();) {
 			try {
 				String cur = ires.next();
-				System.out.println(cur);
+//				System.out.println(cur);
 				double dres = Double.valueOf(cur.split(" ")[cid]);
 				tres.add(dres);
 			} catch (Exception ex) {
@@ -93,7 +93,7 @@ public class WinSVM extends Classification {
 				ex.printStackTrace();
 			}
 		}
-		System.out.println(tres.size() + "\t" + datas.size());
+//		System.out.println(tres.size() + "\t" + datas.size());
 		return tres;
 	}
 
@@ -103,6 +103,12 @@ public class WinSVM extends Classification {
 		FileOps.remove("svm.sin." + svmID);
 		FileOps.remove("svm.scale." + svmID);
 		FileOps.remove("svm.model." + svmID);
+	}
+
+	@Override
+	public void clear() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

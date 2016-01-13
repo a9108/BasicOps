@@ -3,8 +3,6 @@ package feature;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
-import javafx.scene.control.Separator;
-
 import com.sun.org.apache.xml.internal.security.Init;
 
 import basic.Config;
