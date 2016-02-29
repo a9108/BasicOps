@@ -1,6 +1,5 @@
 package basic.format;
 
-import java.util.Comparator;
 import java.util.HashSet;
 
 public class Pair<A extends Comparable<A>, B extends Comparable<B>> implements
